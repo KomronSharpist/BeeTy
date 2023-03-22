@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeeTy.Data.DbContexts;
 using BeeTy.Data.IRepostories;
 using BeeTy.Data.Repostories;
 using BeeTy.Domain.Entities;
@@ -17,18 +18,24 @@ namespace BeeTy.Service.Services;
 
 public class WorkerService : IWorkerService
 {
-    private readonly IGenericRepostory<Worker> genericRepostory = new GenericRepostory<Worker>();
-    private readonly DbContext dbContext;
+    private readonly IWorkerRepostory workerRepostory = new WorkerRepostory();
 
     private readonly IMapper mapper;
+    private AppDbContext dbContext;
+
     public WorkerService(IMapper mapper)
     {
         this.mapper = mapper;
     }
 
+    public WorkerService(AppDbContext dbContext)
+    {
+        this.dbContext = dbContext;
+    }
+
     public async Task<Response<WorkerDto>> CreateAsync(WorkerCDto worker)
     {
-        var workers = await this.genericRepostory.SelectAllAsync();
+        var workers = await this.workerRepostory.SelectAllAsync();
         bool anyEntityExists = workers.Any(u => u.Email.Equals(worker.Email) && u.UserName.Equals(worker.UserName));
         if (anyEntityExists)
         {
@@ -43,9 +50,7 @@ public class WorkerService : IWorkerService
         var mappedWorker = this.mapper.Map<Worker>(worker);
         mappedWorker.Password = worker.Password.Encrypt();
         var resultLast = this.mapper.Map<WorkerDto>(mappedWorker);
-
-
-        var WorkerCreate = await genericRepostory.InsertAsync(mappedWorker);
+        var UserCreate = workerRepostory.InsertAsync(mappedWorker);
 
         return new Response<WorkerDto>
         {
@@ -55,9 +60,9 @@ public class WorkerService : IWorkerService
         };
     }
 
-    public async Task<Response<bool>> DeleteAsync(long id)
+    public async Task<Response<bool>> DeleteAsync(int id)
     {
-        var worker = await this.genericRepostory.DeleteAsync(p => p.Id == id);
+        var worker = await this.workerRepostory.DeleteAsync(id);
         if (worker)
         {
             return new Response<bool>
@@ -78,9 +83,9 @@ public class WorkerService : IWorkerService
 
     public async ValueTask<Response<List<WorkerDto>>> GetAllAsync(string search = null)
     {
-        var workers = await this.genericRepostory.SelectAllAsync();
+        var workers = await this.workerRepostory.SelectAllAsync();
         var content = workers.ToList();
-        if (content.Any())
+        if (!content.Any())
         {
             return new Response<List<WorkerDto>>()
             {
@@ -90,21 +95,28 @@ public class WorkerService : IWorkerService
             };
         }
 
-        var result = workers.Where(user => user.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase));
-        var mappedWorker= this.mapper.Map<List<WorkerDto>>(result);
+        List<WorkerDto> workersDTo = workers.Select(u => new WorkerDto
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            Password = u.Password,
+            UserName = u.UserName,
+            Phone = u.Phone
+        }).ToList();
 
         return new Response<List<WorkerDto>>()
         {
             Code = 200,
             Message = "Succes",
-            Value = mappedWorker
+            Value = workersDTo
         };
     }
 
-    public async ValueTask<Response<WorkerDto>> GetAsync(Predicate<WorkerCDto> predicate = null)
+    public async ValueTask<Response<WorkerDto>> GetAsync(int id)
     {
-        var workers = await this.genericRepostory.SelectAllAsync();
-        if (!workers.Any())
+        var worker  = await this.workerRepostory.SelectAsync(id);
+        if (worker is null)
         {
             return new Response<WorkerDto>
             {
@@ -114,24 +126,39 @@ public class WorkerService : IWorkerService
             };
         }
 
-        if (predicate is null)
-            predicate = x => true;
+        var mappedWorker =  new WorkerDto
+        {
+            FirstName = worker.FirstName,
+            LastName = worker.LastName,
+            Email = worker.Email,
+            Password = worker.Password,
+            UserName = worker.UserName,
+            Phone = worker.Phone
+        };
 
-        var mappedWorker = this.mapper.Map<WorkerDto>(workers);
+        //var mappedUser = this.mapper.Map<WorkerDto>(worker);
 
         return new Response<WorkerDto>
         {
             Code = 200,
             Message = "Succes",
-            Value = mappedWorker
+            Value = mappedWorker = new WorkerDto
+            {
+                FirstName = worker.FirstName,
+                LastName = worker.LastName,
+                Email = worker.Email,
+                Password = worker.Password,
+                UserName = worker.UserName,
+                Phone = worker.Phone
+            }
         };
     }
 
-    public async Task<Response<bool>> UpdateAsync(WorkerCDto worker, long id)
+    public async Task<Response<bool>> UpdateAsync(WorkerCDto worker, int id)
     {
-        var workers = await this.genericRepostory.SelectAllAsync();
-        var userForUpdate = workers.Where(w => w.Id == id).FirstOrDefault();
-        if (userForUpdate is null)
+        var workers = await this.workerRepostory.SelectAllAsync();
+        var workerForUpdate = workers.Where(worker => worker.Id == id).FirstOrDefault();
+        if (workerForUpdate is null)
         {
             return new Response<bool>
             {
@@ -140,15 +167,13 @@ public class WorkerService : IWorkerService
                 Value = false
             };
         }
-        userForUpdate.UpdatedAt = DateTime.UtcNow;
-        userForUpdate.FirstName = worker.FirstName;
-        userForUpdate.LastName = worker.LastName;
-        userForUpdate.Email = worker.Email;
-        userForUpdate.UserName = worker.UserName;
-        userForUpdate.Password = worker.Password;
-
-        await genericRepostory.UpdateAsync(userForUpdate);
-        
+        workerForUpdate.UpdatedAt = DateTime.UtcNow;
+        workerForUpdate.FirstName = worker.FirstName;
+        workerForUpdate.LastName = worker.LastName;
+        workerForUpdate.Email = worker.Email;
+        workerForUpdate.UserName = worker.UserName;
+        workerForUpdate.Password = worker.Password;
+        await workerRepostory.UpdateAsync(workerForUpdate);
         return new Response<bool>
         {
             Code = 200,

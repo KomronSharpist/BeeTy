@@ -8,12 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BeeTy.Data\BeeTy.Data.csproj" />
     <ProjectReference Include="..\BeeTy.Domain\BeeTy.Domain.csproj" />
+    <ProjectReference Include="..\BeeTy.Service\BeeTy.Service.csproj" />
   </ItemGroup>
 
 </Project>

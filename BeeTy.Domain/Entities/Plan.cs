@@ -5,9 +5,9 @@ namespace BeeTy.Domain.Entities;
 
 public class Plan : Auditable
 {
-    public long UserId { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
-    public long WorkerId { get; set; }
+    public int WorkerId { get; set; }
     public Worker Worker { get; set; }
     public string Description { get; set; }
     public OrderTypes statusType { get; set; } = OrderTypes.planned;

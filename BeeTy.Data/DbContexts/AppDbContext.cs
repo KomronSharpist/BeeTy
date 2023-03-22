@@ -15,23 +15,38 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Worker>().Ignore(x => x.Company);
 
+        modelBuilder.Entity<Order>()
+                .Property<int>("BlogForeignKey");
+
+        modelBuilder.Entity<Order>()
+            .HasOne(p => p.User)
+            .WithMany(b => b.Orders)
+            .HasForeignKey("BlogForeignKey");
 
         modelBuilder.Entity<Plan>()
-        .Property(p => p.UserId)
-        .IsRequired();
+                .Property<int>("BlogForeignKey");
 
         modelBuilder.Entity<Plan>()
-        .Property(p => p.WorkerId)
-        .IsRequired();
+            .HasOne(p => p.User)
+            .WithMany(b => b.Plans)
+            .HasForeignKey("BlogForeignKey");
 
 
         modelBuilder.Entity<Order>()
-       .Property(p => p.UserId)
-       .IsRequired();
+                .Property<int>("BlogForeignKey");
 
         modelBuilder.Entity<Order>()
-        .Property(p => p.WorkerId)
-        .IsRequired();
+            .HasOne(p => p.Worker)
+            .WithMany(b => b.Orders)
+            .HasForeignKey("BlogForeignKey");
+
+        modelBuilder.Entity<Plan>()
+                .Property<int>("BlogForeignKey");
+
+        modelBuilder.Entity<Plan>()
+            .HasOne(p => p.Worker)
+            .WithMany(b => b.Plans)
+            .HasForeignKey("BlogForeignKey");
     }
 
     public virtual DbSet<User> Users { get; set; }

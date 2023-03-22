@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeeTy.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230322011212_SecondMigration")]
-    partial class SecondMigration
+    [Migration("20230322055655_FirstMigration")]
+    partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

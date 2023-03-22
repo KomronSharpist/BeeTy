@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeeTy.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230322042527_ThirdMigration")]
-    partial class ThirdMigration
+    [Migration("20230322101825_SecondMigration")]
+    partial class SecondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,9 @@ namespace BeeTy.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BlogForeignKey")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -44,23 +47,15 @@ namespace BeeTy.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("UserId1")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("WorkerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("WorkerId1")
+                    b.Property<int>("WorkerId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
-
-                    b.HasIndex("WorkerId1");
+                    b.HasIndex("BlogForeignKey");
 
                     b.ToTable("Orders");
                 });
@@ -73,6 +68,9 @@ namespace BeeTy.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BlogForeignKey")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -82,16 +80,10 @@ namespace BeeTy.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("UserId1")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<long>("WorkerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("WorkerId1")
+                    b.Property<int>("WorkerId")
                         .HasColumnType("integer");
 
                     b.Property<byte>("statusType")
@@ -99,9 +91,7 @@ namespace BeeTy.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
-
-                    b.HasIndex("WorkerId1");
+                    b.HasIndex("BlogForeignKey");
 
                     b.ToTable("Plans");
                 });
@@ -187,11 +177,15 @@ namespace BeeTy.Data.Migrations
                 {
                     b.HasOne("BeeTy.Domain.Entities.User", "User")
                         .WithMany("Orders")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("BlogForeignKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BeeTy.Domain.Entities.Worker", "Worker")
                         .WithMany("Orders")
-                        .HasForeignKey("WorkerId1");
+                        .HasForeignKey("BlogForeignKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 
@@ -202,11 +196,15 @@ namespace BeeTy.Data.Migrations
                 {
                     b.HasOne("BeeTy.Domain.Entities.User", "User")
                         .WithMany("Plans")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("BlogForeignKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BeeTy.Domain.Entities.Worker", "Worker")
                         .WithMany("Plans")
-                        .HasForeignKey("WorkerId1");
+                        .HasForeignKey("BlogForeignKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 

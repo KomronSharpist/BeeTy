@@ -12,8 +12,8 @@ namespace BeeTy.Service.Interfaces;
 public interface IUserService
 {
     Task<Response<UserDto>> CreateAsync (UserCDto user);
-    Task<Response<bool>> UpdateAsync (UserCDto user, long id);
-    Task<Response<bool>> DeleteAsync (long id);
-    ValueTask<Response<UserDto>> GetAsync (Predicate<UserCDto> predicate = null);
+    Task<Response<bool>> UpdateAsync(UserCDto user, int id);
+    Task<Response<bool>> DeleteAsync(int id);
+    ValueTask<Response<UserDto>> GetAsync (int id);
     ValueTask<Response<List<UserDto>>> GetAllAsync(string search = null);
 }

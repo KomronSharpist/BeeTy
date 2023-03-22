@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeeTy.Data.DbContexts;
 using BeeTy.Data.IRepostories;
 using BeeTy.Data.Repostories;
 using BeeTy.Domain.Entities;
@@ -18,18 +19,24 @@ namespace BeeTy.Service.Services;
 
 public class UserService : IUserService
 {
-    private readonly IGenericRepostory<User> genericRepostory = new GenericRepostory<User>();
-    private readonly DbContext dbContext;
+    private readonly IUserRepostory repostory = new UserRepostory();
 
     private readonly IMapper mapper;
+    private AppDbContext dbContext;
+
     public UserService(IMapper mapper)
     {
         this.mapper = mapper;
     }
 
+    public UserService(AppDbContext dbContext)
+    {
+        this.dbContext = dbContext;
+    }
+
     public async Task<Response<UserDto>> CreateAsync(UserCDto user)
     {
-        var users = await this.genericRepostory.SelectAllAsync();
+        var users = await this.repostory.SelectAllAsync();
         bool anyEntityExists = users.Any(u => u.Email.Equals(user.Email) && u.UserName.Equals(user.UserName));
         if (anyEntityExists)
         {
@@ -44,7 +51,7 @@ public class UserService : IUserService
         var mappedUser = this.mapper.Map<User>(user);
         mappedUser.Password = user.Password.Encrypt();
         var resultLast = this.mapper.Map<UserDto>(mappedUser);
-        var UserCreate = genericRepostory.InsertAsync(mappedUser);
+        var UserCreate = repostory.InsertAsync(mappedUser);
 
         return new Response<UserDto>
         {
@@ -54,9 +61,9 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<Response<bool>> UpdateAsync(UserCDto user, long id)
+    public async Task<Response<bool>> UpdateAsync(UserCDto user, int id)
     {
-        var users = await this.genericRepostory.SelectAllAsync();
+        var users = await this.repostory.SelectAllAsync();
         var userForUpdate = users.Where(user=> user.Id == id).FirstOrDefault();
         if( userForUpdate is null)
         {
@@ -74,7 +81,7 @@ public class UserService : IUserService
         userForUpdate.UserName = user.UserName;
         userForUpdate.Password = user.Password;
         userForUpdate.Age = user.Age;
-        await genericRepostory.UpdateAsync(userForUpdate);
+        await repostory.UpdateAsync(userForUpdate);
         return new Response<bool>
         {
             Code = 200,
@@ -83,9 +90,9 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<Response<bool>> DeleteAsync(long id)
+    public async Task<Response<bool>> DeleteAsync(int id)
     {
-        var user = await this.genericRepostory.DeleteAsync(p=> p.Id == id);
+        var user = await this.repostory.DeleteAsync(id);
         if (user)
         {
             return new Response<bool>
@@ -104,10 +111,10 @@ public class UserService : IUserService
         };
     }
 
-    public async ValueTask<Response<UserDto>> GetAsync(Predicate<UserCDto> predicate = null)
+    public async ValueTask<Response<UserDto>> GetAsync(int id)
     {
-        var users = await this.genericRepostory.SelectAllAsync();
-        if (!users.Any())
+        var users = await this.repostory.SelectAsync(id);
+        if (users is null)
         {
             return new Response<UserDto>
             {
@@ -117,24 +124,37 @@ public class UserService : IUserService
             };
         }
 
-        if (predicate is null)
-            predicate = x => true;
 
-        var mappedUser = this.mapper.Map<UserDto>(users);
+        var mappedUser = new UserDto
+        {
+            FirstName = users.FirstName,
+            LastName = users.LastName,
+            Email = users.Email,
+            Password = users.Password,
+            UserName = users.UserName,
+            Phone = users.Phone
+        };
 
         return new Response<UserDto>
         {
             Code = 200,
             Message = "Succes",
-            Value = mappedUser
+            Value = mappedUser = new UserDto{
+                FirstName = users.FirstName,
+                LastName = users.LastName,
+                Email = users.Email,
+                Password = users.Password,
+                UserName = users.UserName,
+                Phone = users.Phone
+            }
         };
     }
 
     public async ValueTask<Response<List<UserDto>>> GetAllAsync(string search = null)
     {
-        var users = await this.genericRepostory.SelectAllAsync();
+        var users = await this.repostory.SelectAllAsync();
         var content = users.ToList();
-        if (content.Any())
+        if (!content.Any())
         {
             return new Response<List<UserDto>>()
             {
@@ -144,14 +164,23 @@ public class UserService : IUserService
             };
         }
 
-        var result = users.Where(user => user.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase));
-        var mappedUsers = this.mapper.Map<List<UserDto>>(result);
+        List<UserDto> userDtos = users.Select(u => new UserDto
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            Password = u.Password,
+            UserName = u.UserName,
+            Age= u.Age,
+            Phone = u.Phone
+        }).ToList();
+
 
         return new Response<List<UserDto>>()
         {
             Code = 200,
             Message = "Succes",
-            Value = mappedUsers
+            Value = userDtos
         };
     }
 }

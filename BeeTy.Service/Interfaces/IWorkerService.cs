@@ -12,8 +12,8 @@ namespace BeeTy.Service.Interfaces;
 public interface IWorkerService
 {
     Task<Response<WorkerDto>> CreateAsync(WorkerCDto worker);
-    Task<Response<bool>> UpdateAsync(WorkerCDto worker, long id);
-    Task<Response<bool>> DeleteAsync(long id);
-    ValueTask<Response<WorkerDto>> GetAsync(Predicate<WorkerCDto> predicate = null);
+    Task<Response<bool>> UpdateAsync(WorkerCDto worker, int id);
+    Task<Response<bool>> DeleteAsync(int id);
+    ValueTask<Response<WorkerDto>> GetAsync(int id);
     ValueTask<Response<List<WorkerDto>>> GetAllAsync(string search = null);
 }

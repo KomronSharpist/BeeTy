@@ -1,4 +1,5 @@
 ﻿using BeeTy.Domain.Entities;
+using BeeTy.Service.DTOs;
 using BeeTy.Service.Helpers;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace BeeTy.Service.Interfaces;
 public interface IOrderService
 {
     Task<Response<Order>> CreateAsync(Order order);
-    Task<Response<bool>> UpdateAsync(Order order, long id);
-    Task<Response<bool>> DeleteAsync(long id);
-    Response<Order> GetAsync(Predicate<Order> predicate = null);
-    Response<Order> GetAllAsync(Predicate<Order> predicate = null);
+    Task<Response<bool>> UpdateAsync(Order order, int id);
+    Task<Response<bool>> DeleteAsync(int id);
+    ValueTask<Response<Order>> GetAsync(int id);
+    ValueTask<Response<List<Order>>> GetAllAsync(string search = null);
 }
