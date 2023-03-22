@@ -13,43 +13,8 @@ AppDbContext dbContext = new AppDbContext();
 HttpClient client = new HttpClient();
 
 
-//SERVICESSS
-IUserService UserService = new UserService(dbContext);
-IWorkerService WorkerService = new WorkerService(dbContext);
-IPlanService PlanService = new PlanService(dbContext);
 
-//REPOSTORIESSS
-IUserRepostory UserRepostory = new UserRepostory(dbContext);
-IWorkerRepostory WorkerRepostory = new WorkerRepostory(dbContext);
-IPlanRespotory PlanRepostory = new PlanRepostory(dbContext);
-
-
-//User newUser = new User()
-//{
-//    FirstName = "Test",
-//    LastName = "Test",
-//    Email = "Test",
-//    Password = "Test",
-//    Phone = "Test",
-//    Age = 19,
-//    CreatedAt = DateTime.Now,
-//    UserName = "Test",
-//};
-
-
-
-//Worker newWorker = new Worker()
-//{
-//    Id = 12,
-//    FirstName = "Test",
-//    LastName = "Test",
-//    Email = "Test",
-//    Password = "Test",
-//    Phone = "Test",
-//    UserName = "Test",
-//};
-//await WorkerRepostory.InsertAsync(newWorker);
-
+// Ozimga mos api topolmagach userlar uchun apini olib ikiga bolib ishlatganman bu yerda. 
 
 #region Api orqali malumot qoshish. Agar oldin qoshilgan malumot qoshilsa eror beradi
 
