@@ -75,14 +75,11 @@ IPlanRespotory PlanRepostory = new PlanRepostory(dbContext);
 //    await WorkerRepostory.InsertAsync(result);
 //}
 
-WorkerCDto newWorker = new WorkerCDto
+Order newOrder = new Order
 {
-    FirstName = "Komron",
-    LastName = "Sulayomnov",
-    UserName = "aDASdasda",
-    Email = " admawndjawndjaw",
-    Phone = "njasndjandjna",
-    Password = "Password",
+    Description = "Iloji yoq narsani ozi yoq",
+    UserId = 13,
+    WorkerId = 58
 };
 
-var res = await UserService.DeleteAsync(5);
+var res = await orderService.CreateAsync(newOrder);

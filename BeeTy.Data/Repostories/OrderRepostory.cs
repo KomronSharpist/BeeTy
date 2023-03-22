@@ -10,20 +10,18 @@ using System.Threading.Tasks;
 
 namespace BeeTy.Data.Repostories
 {
-    public class OrderRepostory : IOrderRepostory
+    internal class OrderRepostory : IOrderRepostory
     {
         private readonly AppDbContext dbContext;
-        private AppDbContext appcontext;
 
+        public OrderRepostory(AppDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
         public OrderRepostory()
         {
+            this.dbContext = dbContext;
         }
-
-        public OrderRepostory(AppDbContext appcontext)
-        {
-            this.appcontext = appcontext;
-        }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var ModelToDelete = this.dbContext.Orders.ToList().FirstOrDefault(p => p.Id == id);
@@ -39,7 +37,7 @@ namespace BeeTy.Data.Repostories
 
         public async Task<Order> InsertAsync(Order order)
         {
-            var InsertedOrder = dbContext.Orders.Add(order);
+            var InsertedOrder = await dbContext.Orders.AddAsync(order);
             await dbContext.SaveChangesAsync();
             return InsertedOrder.Entity;
         }
