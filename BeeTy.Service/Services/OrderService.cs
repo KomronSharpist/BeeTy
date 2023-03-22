@@ -17,20 +17,16 @@ namespace BeeTy.Service.Services;
 
 public class OrderService : IOrderService
 {
-    private readonly IOrderRepostory orderRepostory = new OrderRepostory();
+    private readonly IOrderRepostory orderRepostory;
 
     private readonly IMapper mapper;
-    private AppDbContext dbContext;
 
     public OrderService(IMapper mapper)
     {
         this.mapper = mapper;
+        this.orderRepostory = orderRepostory;
     }
 
-    public OrderService(AppDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
 
     public async Task<Response<Order>> CreateAsync(Order order)
     {

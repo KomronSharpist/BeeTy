@@ -8,58 +8,49 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeeTy.Data.Repostories
+namespace BeeTy.Data.Repostories;
+
+internal class OrderRepostory : IOrderRepostory
 {
-    internal class OrderRepostory : IOrderRepostory
+    private readonly AppDbContext dbContext;
+
+    public async Task<bool> DeleteAsync(int id)
     {
-        private readonly AppDbContext dbContext;
-
-        public OrderRepostory(AppDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-        public OrderRepostory()
-        {
-            this.dbContext = dbContext;
-        }
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var ModelToDelete = this.dbContext.Orders.ToList().FirstOrDefault(p => p.Id == id);
-            if (ModelToDelete is null)
-                return false;
+        var ModelToDelete = this.dbContext.Orders.ToList().FirstOrDefault(p => p.Id == id);
+        if (ModelToDelete is null)
+            return false;
 
 
-            dbContext.Orders.RemoveRange(ModelToDelete);
-            await dbContext.SaveChangesAsync();
+        dbContext.Orders.RemoveRange(ModelToDelete);
+        await dbContext.SaveChangesAsync();
 
-            return true;
-        }
+        return true;
+    }
 
-        public async Task<Order> InsertAsync(Order order)
-        {
-            var InsertedOrder = await dbContext.Orders.AddAsync(order);
-            await dbContext.SaveChangesAsync();
-            return InsertedOrder.Entity;
-        }
+    public async Task<Order> InsertAsync(Order order)
+    {
+        var InsertedOrder = await dbContext.Orders.AddAsync(order);
+        await dbContext.SaveChangesAsync();
+        return InsertedOrder.Entity;
+    }
 
-        public async Task<List<Order>> SelectAllAsync()
-        {
-            List<Order> entities = await dbContext.Orders.ToListAsync();
+    public async Task<List<Order>> SelectAllAsync()
+    {
+        List<Order> entities = await dbContext.Orders.ToListAsync();
 
-            return entities;
-        }
+        return entities;
+    }
 
-        public async Task<Order> SelectAsync(int id)
-        {
-            return dbContext.Orders.ToList().FirstOrDefault(x => x.Id == id);
-        }
+    public async Task<Order> SelectAsync(int id)
+    {
+        return dbContext.Orders.ToList().FirstOrDefault(x => x.Id == id);
+    }
 
-        public async Task<Order> UpdateAsync(Order order)
-        {
-            var updatedOrder = this.dbContext.Orders.Update(order);
-            await dbContext.SaveChangesAsync();
+    public async Task<Order> UpdateAsync(Order order)
+    {
+        var updatedOrder = this.dbContext.Orders.Update(order);
+        await dbContext.SaveChangesAsync();
 
-            return updatedOrder.Entity;
-        }
+        return updatedOrder.Entity;
     }
 }

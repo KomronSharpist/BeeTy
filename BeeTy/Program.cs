@@ -16,13 +16,11 @@ HttpClient client = new HttpClient();
 //SERVICESSS
 IUserService UserService = new UserService(dbContext);
 IWorkerService WorkerService = new WorkerService(dbContext);
-IOrderService orderService = new OrderService(dbContext);
 IPlanService PlanService = new PlanService(dbContext);
 
 //REPOSTORIESSS
 IUserRepostory UserRepostory = new UserRepostory(dbContext);
 IWorkerRepostory WorkerRepostory = new WorkerRepostory(dbContext);
-IOrderRepostory orderRepostory = new OrderRepostory(dbContext);
 IPlanRespotory PlanRepostory = new PlanRepostory(dbContext);
 
 
@@ -53,7 +51,7 @@ IPlanRespotory PlanRepostory = new PlanRepostory(dbContext);
 //await WorkerRepostory.InsertAsync(newWorker);
 
 
-
+#region Api orqali malumot qoshish. Agar oldin qoshilgan malumot qoshilsa eror beradi
 
 //for (int i = 2; i < 50; i++)
 //{
@@ -74,12 +72,5 @@ IPlanRespotory PlanRepostory = new PlanRepostory(dbContext);
 //    Console.WriteLine(result.FirstName);
 //    await WorkerRepostory.InsertAsync(result);
 //}
+#endregion
 
-Order newOrder = new Order
-{
-    Description = "Iloji yoq narsani ozi yoq",
-    UserId = 13,
-    WorkerId = 58
-};
-
-var res = await orderService.CreateAsync(newOrder);
